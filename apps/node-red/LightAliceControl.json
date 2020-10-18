@@ -1,0 +1,368 @@
+[
+    {
+        "id": "1ef57030.9cb8d",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "d8738d83.8cb5e8",
+        "type": "debug",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 185,
+        "wires": []
+    },
+    {
+        "id": "23f1a188.16f586",
+        "type": "function",
+        "z": "1ef57030.9cb8d",
+        "name": "f.ColorConverter",
+        "func": "try{\n    if(msg.payload === false){\n        msg.payload = \"0x000000\"\n       return msg\n    }\n    \nvar bin = msg.payload;\nvar r = bin >> 16;\nvar g = bin >> 8 & 0xFF;\nvar b = bin & 0xFF;\nvar hex = \"0x\" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);\nmsg.payload = hex;\nreturn msg;\n}\ncatch(e){}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 455,
+        "y": 185,
+        "wires": [
+            [
+                "d8738d83.8cb5e8",
+                "ffc00a6f.c878a",
+                "bc3f18de.976f"
+            ]
+        ]
+    },
+    {
+        "id": "ffc00a6f.c878a",
+        "type": "mqtt out",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "topic": "/rootshell/tsl/ambilight/color/set",
+        "qos": "",
+        "retain": "true",
+        "broker": "28f10716.30a06",
+        "x": 725,
+        "y": 185,
+        "wires": []
+    },
+    {
+        "id": "1760d733.eaf5f1",
+        "type": "comment",
+        "z": "1ef57030.9cb8d",
+        "name": "help alice url",
+        "info": "https://yandex.ru/quasar/",
+        "x": 430,
+        "y": 135,
+        "wires": []
+    },
+    {
+        "id": "ce8d0e5b.55b11",
+        "type": "Color",
+        "z": "1ef57030.9cb8d",
+        "device": "fa066795.2fcaf",
+        "name": "Комната:Подсветка",
+        "scheme": "rgb",
+        "response": true,
+        "x": 185,
+        "y": 185,
+        "wires": [
+            [
+                "23f1a188.16f586"
+            ]
+        ]
+    },
+    {
+        "id": "61baadf1.31e484",
+        "type": "On_Off",
+        "z": "1ef57030.9cb8d",
+        "device": "fa066795.2fcaf",
+        "name": "Комната:Подсветка",
+        "retrievable": false,
+        "response": true,
+        "x": 185,
+        "y": 135,
+        "wires": [
+            [
+                "23f1a188.16f586"
+            ]
+        ]
+    },
+    {
+        "id": "a7cb0b67.79ddb",
+        "type": "Range",
+        "z": "1ef57030.9cb8d",
+        "device": "fa066795.2fcaf",
+        "name": "Комната:Подсветка",
+        "instance": "brightness",
+        "unit": "unit.percent",
+        "min": "0",
+        "max": "100",
+        "precision": "5",
+        "response": true,
+        "x": 195,
+        "y": 285,
+        "wires": [
+            [
+                "9bdf02d6.b2323"
+            ]
+        ]
+    },
+    {
+        "id": "8dbd8aee.7aa4e",
+        "type": "mqtt out",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "topic": "/rootshell/tsl/ambilight/brightness/set",
+        "qos": "",
+        "retain": "true",
+        "broker": "28f10716.30a06",
+        "x": 745,
+        "y": 285,
+        "wires": []
+    },
+    {
+        "id": "9bdf02d6.b2323",
+        "type": "function",
+        "z": "1ef57030.9cb8d",
+        "name": "f.brightness.percent",
+        "func": "var brightness = 255;\nvar value = {}\nvalue.payload = Math.ceil(msg.payload * (brightness / 100))\nreturn value\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 450,
+        "y": 285,
+        "wires": [
+            [
+                "89aa17bc.80ea78",
+                "8dbd8aee.7aa4e"
+            ]
+        ]
+    },
+    {
+        "id": "89aa17bc.80ea78",
+        "type": "debug",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 285,
+        "wires": []
+    },
+    {
+        "id": "63884a53.f1e1f4",
+        "type": "Mode",
+        "z": "1ef57030.9cb8d",
+        "device": "fa066795.2fcaf",
+        "name": "Комната:Подсветка",
+        "instance": "program",
+        "modes": [
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten"
+        ],
+        "response": true,
+        "x": 195,
+        "y": 235,
+        "wires": [
+            [
+                "bc3f18de.976f"
+            ]
+        ]
+    },
+    {
+        "id": "3b069595.1d71b2",
+        "type": "mqtt out",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "topic": "/rootshell/tsl/ambilight/modefx/set",
+        "qos": "",
+        "retain": "true",
+        "broker": "28f10716.30a06",
+        "x": 735,
+        "y": 235,
+        "wires": []
+    },
+    {
+        "id": "bc3f18de.976f",
+        "type": "function",
+        "z": "1ef57030.9cb8d",
+        "name": "f.fx.program",
+        "func": "try{\n    var mode = {}\n    switch (msg.payload) {\n        case \"one\":\n            mode.payload = 12\n            return mode\n        break\n        case \"two\":\n            mode.payload = 13\n            return mode\n        break\n        \n        case \"three\":\n            mode.payload = 2\n            return mode\n        break\n        \n        case \"four\":\n            mode.payload = 3\n            return mode\n        break\n\n        case \"five\":\n            mode.payload = 10\n            return mode\n        break\n        \n        case \"six\":\n            mode.payload = 14\n            return mode\n        break\n        \n        case \"seven\":\n            mode.payload = 46 \n            return mode\n        break\n        \n        case \"eight\":\n            mode.payload = 51\n            return mode\n        break\n        \n        case \"nine\":\n            mode.payload = 20\n            return mode\n        break\n        \n        case \"ten\":\n            mode.payload = 53\n            return mode\n        break\n        \n        default:\n            mode.payload = 0\n            return mode\n    }\n}\ncatch(e){}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 475,
+        "y": 235,
+        "wires": [
+            [
+                "3b069595.1d71b2",
+                "3d95284e.088128"
+            ]
+        ]
+    },
+    {
+        "id": "3d95284e.088128",
+        "type": "debug",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 235,
+        "wires": []
+    },
+    {
+        "id": "11f17af6.fdf1d5",
+        "type": "Mode",
+        "z": "1ef57030.9cb8d",
+        "device": "fa066795.2fcaf",
+        "name": "Комната:Подсветка",
+        "instance": "work_speed",
+        "modes": [
+            "one",
+            "two",
+            "three",
+            "four",
+            "five"
+        ],
+        "response": true,
+        "x": 205,
+        "y": 335,
+        "wires": [
+            [
+                "6b7c7697.b57278"
+            ]
+        ]
+    },
+    {
+        "id": "6b7c7697.b57278",
+        "type": "function",
+        "z": "1ef57030.9cb8d",
+        "name": "f.fx.program",
+        "func": "try{\n    var speed = {}\n    switch (msg.payload) {\n        case \"one\":\n            speed.payload = 5000\n            return speed\n        break\n        case \"two\":\n            speed.payload = 4000\n            return speed\n        break\n        \n        case \"three\":\n            speed.payload = 3000\n            return speed\n        break\n        \n        case \"four\":\n            speed.payload = 2000\n            return speed\n        break\n\n        case \"five\":\n            speed.payload = 1000\n            return speed\n        break\n\n        default:\n            speed.payload = 1000\n            return speed\n    }\n}\ncatch(e){}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 480,
+        "y": 335,
+        "wires": [
+            [
+                "d334fbd9.9c061",
+                "227edd40.a0872a"
+            ]
+        ]
+    },
+    {
+        "id": "d334fbd9.9c061",
+        "type": "mqtt out",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "topic": "/rootshell/tsl/ambilight/speed/set",
+        "qos": "",
+        "retain": "true",
+        "broker": "28f10716.30a06",
+        "x": 725,
+        "y": 335,
+        "wires": []
+    },
+    {
+        "id": "227edd40.a0872a",
+        "type": "debug",
+        "z": "1ef57030.9cb8d",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 990,
+        "y": 335,
+        "wires": []
+    },
+    {
+        "id": "28f10716.30a06",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "brokerName",
+        "broker": "mqtt",
+        "port": "1883",
+        "tls": "e8b58f64.85ac18",
+        "clientid": "ClientID",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "fa066795.2fcaf",
+        "type": "alice-device",
+        "z": "",
+        "service": "d21120f2.0ae368",
+        "name": "Подсветка",
+        "description": "",
+        "room": "Комната",
+        "dtype": "devices.types.light"
+    },
+    {
+        "id": "e8b58f64.85ac18",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": false
+    },
+    {
+        "id": "d21120f2.0ae368",
+        "type": "alice-service",
+        "z": "",
+        "name": "youremail@yandex.ru"
+    }
+]
