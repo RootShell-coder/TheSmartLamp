@@ -79,6 +79,7 @@ void ledNode::LedStripUpdate(){
     if(fade == 0){
       saveWarm = setWarm;
       LedWriteWarm(saveWarm);
+      Homie.getLogger() << "  • Brightness warm set "<< saveWarm / 1024 * 100 << " % PWM set " << saveWarm << endl;
     }else{
       if(micros() - currentMicros > fade){
         ++saveWarm;
@@ -92,6 +93,7 @@ void ledNode::LedStripUpdate(){
     if(fade == 0){
       saveWarm = setWarm;
       LedWriteWarm(saveWarm);
+      Homie.getLogger() << "  • Brightness warm set "<< saveWarm / 1024 * 100 << " % PWM set " << saveWarm << endl;
     }else{
       if(micros() - currentMicros > fade){
         --saveWarm;
@@ -105,6 +107,7 @@ void ledNode::LedStripUpdate(){
       if(fade == 0){
         saveCold = setCold;
         LedWriteCold(saveCold);
+        Homie.getLogger() << "  • Brightness cold set"<< saveCold / 1024 * 100 << " % PWM set " << saveCold << endl;
     }else{
       if(micros() - currentMicros > fade){
         ++saveCold;
@@ -118,6 +121,7 @@ void ledNode::LedStripUpdate(){
     if(fade == 0){
         saveCold = setCold;
         LedWriteCold(saveCold);
+        Homie.getLogger() << "  • Brightness cold set"<< saveCold / 1024 * 100 << " % PWM set " << saveCold << endl;
     }else{
       if(micros() - currentMicros > fade){
         --saveCold;
