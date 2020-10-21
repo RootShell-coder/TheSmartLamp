@@ -1,5 +1,5 @@
-#ifndef PINGLIMBE_H
-#define PINGLIMB_H
+#ifndef PINGNODE_H
+#define PINGNODE_H
 #include <Homie.h>
 class pingNode : public HomieNode {
     public:

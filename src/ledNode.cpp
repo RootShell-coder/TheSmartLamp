@@ -2,7 +2,7 @@
 
 //#define DEBUG
 
-#if defined(ESP32)
+#ifdef ESP32
 #define WARM 32
 #define COLD 33
   const int freq = 30000;
@@ -59,7 +59,7 @@ void ledNode::setup() {
   pinMode(WARM,OUTPUT);
   pinMode(COLD,OUTPUT);
   fade = fadeLed->get();
-#if defined(ESP32)
+#ifdef ESP32
   ledcSetup(ledChannelWarm, freq, resolution);
   ledcSetup(ledChannelCold, freq, resolution);
   ledcAttachPin(WARM, ledChannelWarm);
@@ -136,10 +136,10 @@ void ledNode::LedWriteWarm(uint16_t value){
 #ifdef DEBUG
     Serial.println(value);
 #endif
-#if defined(ESP8266)
+#ifdef ESP8266
     analogWrite(WARM, value);
 #endif
-#if defined(ESP32)
+#ifdef ESP32
     ledcWrite(ledChannelWarm, value);
 #endif
 }
@@ -148,10 +148,10 @@ void ledNode::LedWriteCold(uint16_t value){
 #ifdef DEBUG
     Serial.println(value);
 #endif
-#if defined(ESP8266)
+#ifdef ESP8266
     analogWrite(WARM,value);
 #endif
-#if defined(ESP32)
+#ifdef ESP32
     ledcWrite(ledChannelCold, value);
 #endif
 }
