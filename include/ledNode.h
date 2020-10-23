@@ -2,12 +2,6 @@
 #define LEDNODE_H
 #include <Homie.h>
 
-#if defined(ESP8266)
-#endif
-
-#if defined(ESP32)
- // #include <driver/rmt.h>
-#endif
 
 class ledNode : public HomieNode {
     public:
@@ -23,10 +17,12 @@ class ledNode : public HomieNode {
         HomieSetting<long> *warmLed;
         HomieSetting<long> *coldLed;
         HomieSetting<long> *fadeLed;
-        uint16_t setWarm, setCold, saveWarm, saveCold, fade;
-        unsigned long currentMicros = micros();
-        void LedStripUpdate();
-        void LedWriteWarm(uint16_t value);
-        void LedWriteCold(uint16_t value);
+
+        unsigned long saveMicros = micros();
+        uint16_t  warm, _warm, cold, _cold, fade;
+        void ledUpdate();
+        //void coldUpdate();
+        void LedWriteWarm(uint16_t &value);
+        void LedWriteCold(uint16_t &value);
 };
 #endif

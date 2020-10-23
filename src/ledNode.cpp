@@ -1,14 +1,18 @@
 #include "ledNode.h"
 
-//#define DEBUG
+#define LOG
+
+#ifdef ESP8266
+    //fix this
+#endif
 
 #ifdef ESP32
 #define WARM 32
 #define COLD 33
-  const int freq = 30000;
-  const int ledChannelWarm = 0;
-  const int ledChannelCold = 1;
-  const int resolution = 10; //Resolution 8, 10, 12, 15
+  const int freq = 30000;     //PWM hz
+  const int channelWarm = 0;
+  const int channelCold = 1;
+  const int resolution = 10; //Resolution 8, 10, 12, 15 (10bit = 1024 value)
 #endif
 
   ledNode::ledNode(const char* id, const char* name, const char* type): HomieNode(id, name, type){
@@ -19,24 +23,22 @@
 
 bool ledNode::handleInput(const HomieRange& range, const String& property, const String& value){
   if(property == "warm"){
-    uint16_t Warm = (uint16_t)value.toInt();
-    if(Warm >= 0 && Warm <= 1024){
-      setProperty("warm").send(String(Warm));
-      setWarm = Warm;
-    }else{ setWarm = 0; }
+    if((uint16_t)value.toInt() >= 0 && (uint16_t)value.toInt() <= 1024){
+      warm = (uint16_t)value.toInt();
+      setProperty("warm").send(String(warm));
+    }
   }
 
   if(property == "cold"){
-    uint16_t Cold = (uint16_t)value.toInt();
-    if(Cold >= 0 && Cold <= 1024){
-      setProperty("cold").send(String(Cold));
-      setCold = Cold;
-    }else{ setCold = 0; }
+    if((uint16_t)value.toInt() >= 0 && (uint16_t)value.toInt() <= 1024){
+      cold = (uint16_t)value.toInt();
+      setProperty("cold").send(String(cold));
+    }
   }
 
   if(property == "fade"){
-    fade = (uint8_t)value.toInt();
-    if(fade >= 0 && fade <= 60000){
+    if((uint16_t)value.toInt() >= 0 && (uint16_t)value.toInt() <= 60000){
+      fade = (uint16_t)value.toInt();
       setProperty("fade").send(String(fade));
     }
   }
@@ -56,14 +58,17 @@ void ledNode::ledSetup(){
 }
 
 void ledNode::setup() {
-  pinMode(WARM,OUTPUT);
-  pinMode(COLD,OUTPUT);
-  fade = fadeLed->get();
 #ifdef ESP32
-  ledcSetup(ledChannelWarm, freq, resolution);
-  ledcSetup(ledChannelCold, freq, resolution);
-  ledcAttachPin(WARM, ledChannelWarm);
-  ledcAttachPin(COLD, ledChannelCold);
+  pinMode(WARM, OUTPUT);
+  pinMode(COLD, OUTPUT);
+  ledcSetup(channelWarm, freq, resolution);
+  ledcSetup(channelCold, freq, resolution);
+  ledcAttachPin(WARM, channelWarm);
+  ledcAttachPin(COLD, channelCold);
+#endif
+#ifdef ESP8266
+  analogWrite(WARM, warm);
+  analogWrite(COLD, cold);
 #endif
   advertise("warm").setRetained(true).setFormat("0:1024").settable();
   advertise("cold").setRetained(true).setFormat("0:1024").settable();
@@ -71,87 +76,56 @@ void ledNode::setup() {
 }
 
 void ledNode::loop(){
-  LedStripUpdate();
+  ledUpdate();
 }
 
-void ledNode::LedStripUpdate(){
-  while(setWarm > saveWarm){ //Fade Warm on
-    if(fade == 0){
-      saveWarm = setWarm;
-      LedWriteWarm(saveWarm);
-      Homie.getLogger() << "  • Brightness warm set "<< saveWarm / 1024 * 100 << " % PWM set " << saveWarm << endl;
-    }else{
-      if(micros() - currentMicros > fade){
-        ++saveWarm;
-        LedWriteWarm(saveWarm);
-        currentMicros = micros();
-      }
+void ledNode::ledUpdate(){
+  if(micros() - saveMicros > fade){
+    if(_warm < warm){
+        ++_warm;
+        LedWriteWarm(_warm);
+     }
+    if(_cold < cold){
+        ++_cold;
+        LedWriteCold(_cold);
     }
-  }
-
-  while(setWarm < saveWarm){ //Fade Warm off
-    if(fade == 0){
-      saveWarm = setWarm;
-      LedWriteWarm(saveWarm);
-      Homie.getLogger() << "  • Brightness warm set "<< saveWarm / 1024 * 100 << " % PWM set " << saveWarm << endl;
-    }else{
-      if(micros() - currentMicros > fade){
-        --saveWarm;
-        LedWriteWarm(saveWarm);
-        currentMicros = micros();
-      }
+    if(_warm > warm){
+        --_warm;
+        LedWriteWarm(_warm);
+     }
+    if(_cold > cold){
+        --_cold;
+        LedWriteCold(_cold);
     }
-  }
-
-  while(setCold > saveCold){ //Fade Cold on
-      if(fade == 0){
-        saveCold = setCold;
-        LedWriteCold(saveCold);
-        Homie.getLogger() << "  • Brightness cold set"<< saveCold / 1024 * 100 << " % PWM set " << saveCold << endl;
-    }else{
-      if(micros() - currentMicros > fade){
-        ++saveCold;
-        LedWriteCold(saveCold);
-        currentMicros = micros();
-      }
-    }
-  }
-
-  while(setCold < saveCold){ //Fade Cold off
-    if(fade == 0){
-        saveCold = setCold;
-        LedWriteCold(saveCold);
-        Homie.getLogger() << "  • Brightness cold set"<< saveCold / 1024 * 100 << " % PWM set " << saveCold << endl;
-    }else{
-      if(micros() - currentMicros > fade){
-        --saveCold;
-        LedWriteCold(saveCold);
-        currentMicros = micros();
-      }
-    }
+    saveMicros = micros();
   }
 }
 
-void ledNode::LedWriteWarm(uint16_t value){
-#ifdef DEBUG
-    Serial.println(value);
+
+void ledNode::LedWriteWarm(uint16_t &value){
+#ifdef LOG
+if(_warm == warm){
+  Homie.getLogger() << "  • Warm led: " << value << " pwm, "<< fade << " us" << endl;
+}
 #endif
 #ifdef ESP8266
     analogWrite(WARM, value);
 #endif
 #ifdef ESP32
-    ledcWrite(ledChannelWarm, value);
+    ledcWrite(channelWarm, value);
 #endif
 }
 
-void ledNode::LedWriteCold(uint16_t value){
-#ifdef DEBUG
-    Serial.println(value);
+void ledNode::LedWriteCold(uint16_t &value){
+#ifdef LOG
+if(_cold == cold){
+  Homie.getLogger() << "  • Cold led: " << value << " pwm, "<< fade << " us" << endl;
+}
 #endif
 #ifdef ESP8266
-    analogWrite(WARM,value);
+    analogWrite(COLD, value);
 #endif
 #ifdef ESP32
-    ledcWrite(ledChannelCold, value);
+    ledcWrite(channelCold, value);
 #endif
 }
