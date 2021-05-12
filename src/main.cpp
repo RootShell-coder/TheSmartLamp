@@ -1,38 +1,40 @@
+#include <Arduino.h>
 #include <Homie.h>
-#include "pingNode.h"
-#include "sensorNode.h"
-#include "remoteNode.h"
-#include "ambilightNode.h"
-#include "ledNode.h"
+#include "sensor.h"
+#include "ambilight.h"
+#include "led.h"
+#include "relay.h"
 
-/*
-* Smart lamp with MQTT IR devices control
-* Original idea @ElizabethMorves こんばんは [konbanwa]
-* Remake author: RootShell-coder <Root.Shelling@gmail.com>
-*/
+#define BRAND "SmartLamp"
+#define FW_NAME "Smart Lamp"
+#define FW_VER "0.1.1"
 
-#define BRAND     "TSL"
-#define FM_NAME   "The Smart Lamp"
-#define FM_VER    "0.0.5"
+void onHomieEvent(const HomieEvent& event) {
+  switch (event.type) {
+    case HomieEventType::WIFI_DISCONNECTED:
+      Serial << "Wi-Fi disconnected, reason: " << (int8_t)event.wifiReason << endl;
+      break;
+      case HomieEventType::MQTT_DISCONNECTED:
+      Serial << "MQTT disconected, reason: " << (int8_t)event.mqttReason << endl;
+      break;
+  }
+}
 
-pingNode PingNode("network", "connection", "ping");
-sensorNode SensorNode("sensor", "environment", "BME280");
-remoteNode RemoteNode("remote", "control", "IR");
-ambilightNode AmbilihgtNode("ambilight", "Led", "WS2812B");
-ledNode LedNode("light", "Led", "PWM");
+  sensorNode SensorNode("sensor","Sensor", "BME280");
+  ambilightNode AmbilightNode("ambilight","Ambilight", "WS2812B");
+  ledNode LedNode("led","Led", "PWM");
+  relayNode RelayNode("relay","Relay", "Force-guided");
 
 void setup() {
   Serial.begin(115200);
   Serial << endl << endl;
   Homie_setBrand(BRAND);
-  Homie_setFirmware(FM_NAME, FM_VER);
-
-  PingNode.pingSetup();
+  Homie_setFirmware(FW_NAME, FW_VER);
+  Homie.onEvent(onHomieEvent);
   SensorNode.sensorSetup();
-  RemoteNode.remoteSetup();
-  AmbilihgtNode.ambilightSetup();
+  AmbilightNode.ambilightSetup();
   LedNode.ledSetup();
-
+  RelayNode.relaySetup();
   Homie.setup();
 }
 
