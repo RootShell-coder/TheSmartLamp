@@ -5,7 +5,7 @@
 
 class relayNode : public HomieNode {
     public:
-        explicit relayNode(const char *id, const char *name, const char *type);
+        relayNode(const char *id, const char *name, const char *type);
         void relaySetup();
 
     protected:

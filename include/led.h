@@ -5,7 +5,7 @@
 
 class ledNode : public HomieNode {
     public:
-        explicit ledNode(const char *id, const char *name, const char *type);
+        ledNode(const char *id, const char *name, const char *type);
         void ledSetup();
 
     protected:

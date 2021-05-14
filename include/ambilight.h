@@ -7,7 +7,7 @@
 #endif
 class ambilightNode : public HomieNode {
     public:
-        explicit ambilightNode(const char *id, const char *name, const char *type);
+        ambilightNode(const char *id, const char *name, const char *type);
     #if defined(ESP32)
         static void myCustomShow();
     #endif

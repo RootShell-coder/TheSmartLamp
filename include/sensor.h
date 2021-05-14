@@ -6,7 +6,7 @@
 
 class sensorNode : public HomieNode {
     public:
-        explicit sensorNode(const char *id, const char *name, const char *type);
+        sensorNode(const char *id, const char *name, const char *type);
         void sensorSetup();
 
     protected:

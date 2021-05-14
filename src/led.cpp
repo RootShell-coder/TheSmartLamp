@@ -46,18 +46,22 @@ bool ledNode::handleInput(const HomieRange& range, const String& property, const
 }
 
 void ledNode::ledSetup(){
-    warmLed->setDefaultValue(0).setValidator([] (long candidateWarm) {
-    return (candidateWarm >= 0 && candidateWarm <= 1023);
+    warmLed->setDefaultValue(0).setValidator([] (long candidate) {
+    return (candidate >= 0 && candidate <= 1023);
   });
-    coldLed->setDefaultValue(0).setValidator([] (long candidateCold) {
-    return (candidateCold >= 0 && candidateCold <= 1023);
+    coldLed->setDefaultValue(0).setValidator([] (long candidate) {
+    return (candidate >= 0 && candidate <= 1023);
   });
-    fadeLed->setDefaultValue(10000).setValidator([] (long candidateFade) {
-    return (candidateFade >= 0 && candidateFade <= 65000);
+    fadeLed->setDefaultValue(2000).setValidator([] (long candidate) {
+    return (candidate >= 0 && candidate <= 65000);
   });
 }
 
 void ledNode::setup() {
+  warm = warmLed->get();
+  cold = coldLed->get();
+  fade = fadeLed->get();
+
 #ifdef ESP32
   pinMode(WARM, OUTPUT);
   pinMode(COLD, OUTPUT);
@@ -73,6 +77,7 @@ void ledNode::setup() {
   advertise("warm").setRetained(true).setFormat("0:1023").settable();
   advertise("cold").setRetained(true).setFormat("0:1023").settable();
   advertise("fade").setRetained(true).setFormat("0:65000").settable();
+
 }
 
 void ledNode::loop(){

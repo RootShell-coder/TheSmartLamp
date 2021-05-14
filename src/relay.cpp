@@ -28,7 +28,7 @@ return false;
 
 void relayNode::setup(){
   pinMode(RELAY0, OUTPUT);
-
+  digitalWrite(RELAY0, relay0->get() ? HIGH : LOW);
   advertise("relay0").setRetained(true).setFormat("0:1").settable();
 }
 

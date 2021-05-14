@@ -65,7 +65,7 @@ void sensorNode::setup(){
 void sensorNode::loop(){
   if(!sensorEnable){return;}
 
-  if (millis() - lastSensorLoop >= (unsigned long) sensorInterval->get() || lastSensorLoop == 0) {
+  if (millis() - lastSensorLoop >= sensorInterval->get() || lastSensorLoop == 0) {
     lastSensorLoop = millis();
     bme.read(pressure, temperature, humidity, BME280::TempUnit_Celsius, BME280::PresUnit_torr);
 
