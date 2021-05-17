@@ -1,7 +1,7 @@
 #include "ambilight.h"
 
 #ifdef ARDUINO_ARCH_ESP8266
-  #define AMBILIGHT_PIN D8
+  #define AMBILIGHT_PIN D3
 #endif
 
 #ifdef ARDUINO_ARCH_ESP32

@@ -3,7 +3,8 @@
 #define LOG
 
 #ifdef ESP8266
-    //fix this
+  #define WARM D1
+  #define COLD D2
 #endif
 
 #ifdef ESP32

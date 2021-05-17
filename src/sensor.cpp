@@ -2,7 +2,11 @@
 
 #if defined(ESP8266)
   //HSPI ESP8266
-  #define SPI_SS        D4
+  //#define SPI_MOSI      D7  //sda
+  //#define SPI_MISO      D6  //sdo
+  //#define SPI_SCK       D5  //scl
+    #define SPI_SS        D8  //csb
+
 #endif
 
 #if defined(ESP32)
